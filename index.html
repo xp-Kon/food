@@ -115,7 +115,7 @@ function sendOrderEmail() {
     return `${m.name} x${item.qty}`;
   });
   let orderText = `菜单订单如下：\n${items.join('\n')}\n`;
-  emailjs.send("service_c1c8cug", "template_default", {
+  emailjs.send("service_c1c8cug", "template_8qbg6p9", {
     to_email: email,
     message: orderText
   }, "EZnI5_7sLHTsg0omm")
