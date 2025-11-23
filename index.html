@@ -5,17 +5,102 @@
   <title>菜单网页（双列+默认收件邮箱）</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
-    body {font-family:sans-serif;background:#e7fbe3;}
-    #menu, #cart, #orders {margin:24px auto; max-width:420px;}
-    #menu-list {display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-    .menu-item, .cart-item {display:flex;flex-direction:column;align-items:center;padding:14px;border-bottom:1px solid #dde;
-      box-shadow:0 0 8px #ddd; border-radius:12px; background:#fff; margin:0;}
-    .menu-photo {width:130px; height:110px; object-fit:cover; border-radius:8px;}
-    button {padding:6px 18px;background:#8bd8fa;border:none;border-radius:9px;cursor:pointer;margin:10px;}
-    .hidden {display:none;}
-    h1 {text-align:center;color:#247;}
-    #nav {display:flex;gap:18px;justify-content:center;margin:24px;}
-    #mail-status {margin-top:10px;color:#d44;}
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #d8f3dc, #75e6da);
+      margin: 0;
+      padding: 0 10px 40px 10px;
+      color: #17494d;
+    }
+
+    h1 {
+      text-align: center;
+      color: #136f63;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+      font-weight: 700;
+    }
+
+    #nav {
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+      margin: 24px 0;
+    }
+
+    button {
+      padding: 10px 22px;
+      background: #3caea3;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      color: white;
+      box-shadow: 0 4px 8px rgb(60 174 163 / 0.5);
+      transition: background 0.3s, transform 0.2s;
+      flex-basis: auto;
+    }
+    button:hover {
+      background: #278d85;
+      transform: scale(1.05);
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+
+    #menu-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      grid-auto-rows: minmax(160px, auto);
+      padding-bottom: 20px;
+    }
+
+    .menu-item, .cart-item {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 8px 15px rgba(9, 96, 100, 0.15);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow 0.3s;
+    }
+    .menu-item:hover, .cart-item:hover {
+      box-shadow: 0 15px 20px rgba(9, 96, 100, 0.3);
+    }
+
+    .menu-photo {
+      width: 100%;
+      max-width: 140px;
+      height: auto;
+      max-height: 110px;
+      border-radius: 12px;
+      object-fit: cover;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    #mail-status {
+      margin-top: 10px;
+      font-weight: 700;
+      min-height: 24px;
+      font-size: 1.1em;
+      text-align: center;
+      border-radius: 8px;
+      padding: 6px 12px;
+      transition: all 0.4s;
+    }
+    #mail-status.success {
+      color: #1b5e20;
+      background: #a5d6a7;
+      box-shadow: 0 0 10px #4caf50;
+    }
+    #mail-status.error {
+      color: #d32f2f;
+      background: #ef9a9a;
+      box-shadow: 0 0 10px #d32f2f;
+    }
   </style>
 </head>
 <body>
@@ -58,12 +143,14 @@ fetch("list.txt").then(resp=>resp.text()).then(txt=>{
 
 let cart = [];
 let orders = [];
+
 function addCart(id){
   let found = cart.find(i=>i.id===id);
   if(found) found.qty++;
   else cart.push({id:id,qty:1});
   alert("已加入购物车");
 }
+
 function showView(name){
   for(const view of ['menu','cart','orders']){
     document.getElementById(view).classList.toggle('hidden',view!==name);
@@ -71,6 +158,7 @@ function showView(name){
   if(name==='cart') renderCart();
   if(name==='orders') renderOrders();
 }
+
 function renderMenu(){
   let html = "";
   menu.forEach(item=>{
@@ -82,6 +170,7 @@ function renderMenu(){
   });
   document.getElementById('menu-list').innerHTML = html;
 }
+
 function renderCart(){
   let html = "";
   cart.forEach(item=>{
@@ -93,12 +182,16 @@ function renderCart(){
     </div>`;
   });
   document.getElementById('cart-list').innerHTML = html || "<p>购物车为空</p>";
-  document.getElementById('mail-status').innerText = ""; // 清除邮件提示
+  const mailStatus = document.getElementById('mail-status');
+  mailStatus.innerText = ""; // 清除邮件提示
+  mailStatus.classList.remove('success', 'error');
 }
+
 function removeCart(id){
   cart = cart.filter(i=>i.id!==id);
   renderCart();
 }
+
 function renderOrders(){
   let html="";
   if(!orders.length) html="<p>暂无订单</p>";
@@ -120,16 +213,23 @@ function sendOrderEmail() {
     message: orderText
   }, "EZnI5_7sLHTsg0omm")
   .then(function() {
-    document.getElementById('mail-status').innerText = "发送成功！请查收邮箱";
+    let mailStatus = document.getElementById('mail-status');
+    mailStatus.innerText = "发送成功！请查收邮箱";
+    mailStatus.classList.remove('error');
+    mailStatus.classList.add('success');
     orders.push({ time: new Date().toLocaleString(), detail: items.join(', ') });
-    cart = []; // 清空
+    cart = []; // 清空购物车
     renderCart();
     renderOrders();
   }, function(error) {
-    document.getElementById('mail-status').innerText = "发送失败：" + error.text;
+    let mailStatus = document.getElementById('mail-status');
+    mailStatus.innerText = "发送失败：" + error.text;
+    mailStatus.classList.remove('success');
+    mailStatus.classList.add('error');
     console.log(error);
   });
 }
 </script>
+
 </body>
 </html>
