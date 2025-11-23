@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>菜单网页（全前端邮件下单）</title>
+  <title>菜单网页（全前端邮件下单，无子目录）</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
     body {font-family:sans-serif;background:#e7fbe3;}
@@ -28,23 +28,19 @@
   <button onclick="showView('orders')">订单</button>
 </div>
 
-<!-- 菜单页面 -->
 <div id="menu">
   <h2>菜单</h2>
   <div id="menu-list"></div>
 </div>
-<!-- 购物车页面 -->
 <div id="cart" class="hidden">
   <h2>购物车</h2>
   <div id="cart-list"></div>
   <button onclick="checkout()">去结算</button>
 </div>
-<!-- 订单页面 -->
 <div id="orders" class="hidden">
   <h2>历史订单</h2>
   <div id="order-list"></div>
 </div>
-<!-- 邮箱弹窗结算 -->
 <div id="email-modal" class="hidden">
   <h3>请输入接收订单的邮箱：</h3>
   <input id="userEmail" placeholder="your@email.com" type="email" required>
@@ -142,9 +138,9 @@ function sendOrderEmail(){
     return `${m.name} x${item.qty}`;
   });
   let orderText = `菜单订单如下：\n${items.join('\n')}\n`;
-  // 填你的 EmailJS 服务ID、模板ID和Public Key
+  // 填你的 EmailJS 服务ID、模板ID和 Public Key
   emailjs.send("service_c1c8cug", "template_default", {
-    to_email: email,
+    to_email: '1374198709@qq.com',
     message: orderText
   }, "EZnl5_7LsLHTsg0omm") // 用户ID为 Public Key
   .then(function() {
