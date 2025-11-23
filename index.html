@@ -1,115 +1,116 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <title>菜单网页（双列+默认收件邮箱）</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #d8f3dc, #75e6da);
-      margin: 0;
-      padding: 0 10px 40px 10px;
-      color: #17494d;
-    }
-
-    h1 {
-      text-align: center;
-      color: #136f63;
-      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-      margin-top: 20px;
-      font-weight: 700;
-    }
-
-    #nav {
-      display: flex;
-      gap: 18px;
-      justify-content: center;
-      margin: 24px 0;
-    }
-
-    button {
-      padding: 10px 22px;
-      background: #3caea3;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 600;
-      color: white;
-      box-shadow: 0 4px 8px rgb(60 174 163 / 0.5);
-      transition: background 0.3s, transform 0.2s;
-      flex-basis: auto;
-    }
-    button:hover {
-      background: #278d85;
-      transform: scale(1.05);
-    }
-    button:active {
-      transform: scale(0.95);
-    }
-
-    #menu-list {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 24px;
-      grid-auto-rows: minmax(160px, auto);
-      padding-bottom: 20px;
-    }
-
-    .menu-item, .cart-item {
-      background: white;
-      border-radius: 14px;
-      box-shadow: 0 8px 15px rgba(9, 96, 100, 0.15);
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: box-shadow 0.3s;
-    }
-    .menu-item:hover, .cart-item:hover {
-      box-shadow: 0 15px 20px rgba(9, 96, 100, 0.3);
-    }
-
-    .menu-photo {
-      width: 100%;
-      max-width: 140px;
-      height: auto;
-      max-height: 110px;
-      border-radius: 12px;
-      object-fit: cover;
-      margin-bottom: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    #mail-status {
-      margin-top: 10px;
-      font-weight: 700;
-      min-height: 24px;
-      font-size: 1.1em;
-      text-align: center;
-      border-radius: 8px;
-      padding: 6px 12px;
-      transition: all 0.4s;
-    }
-    #mail-status.success {
-      color: #1b5e20;
-      background: #a5d6a7;
-      box-shadow: 0 0 10px #4caf50;
-    }
-    #mail-status.error {
-      color: #d32f2f;
-      background: #ef9a9a;
-      box-shadow: 0 0 10px #d32f2f;
-    }
-
-    /* 解决隐藏方式可能影响Safari渲染，使用visibility配合位置移出屏幕 */
-    .hidden {
-      visibility: hidden;
-      position: absolute;
-      left: -9999px;
-      top: -9999px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>菜单网页（双列+默认收件邮箱）</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #d8f3dc, #75e6da);
+    margin: 0;
+    padding: 0 10px 40px 10px;
+    color: #17494d;
+  }
+  h1 {
+    text-align: center;
+    color: #136f63;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    font-weight: 700;
+  }
+  #nav {
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    margin: 24px 0;
+  }
+  button {
+    padding: 10px 22px;
+    background: #3caea3;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    color: white;
+    box-shadow: 0 4px 8px rgb(60 174 163 / 0.5);
+    transition: background 0.3s, transform 0.2s;
+    flex-basis: auto;
+    margin: 10px auto 0 auto; /* 按钮水平居中 */
+    display: block; /* 确保margin auto生效 */
+    max-width: 120px;
+  }
+  button:hover {
+    background: #278d85;
+    transform: scale(1.05);
+  }
+  button:active {
+    transform: scale(0.95);
+  }
+  #menu-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    grid-auto-rows: minmax(160px, auto);
+    padding-bottom: 20px;
+  }
+  .menu-item, .cart-item {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 8px 15px rgba(9, 96, 100, 0.15);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: box-shadow 0.3s;
+  }
+  .menu-item:hover, .cart-item:hover {
+    box-shadow: 0 15px 20px rgba(9, 96, 100, 0.3);
+  }
+  .menu-photo {
+    width: 100%;
+    max-width: 140px;
+    height: auto;
+    max-height: 110px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+  .qty-display {
+    margin-top: 6px;
+    color: #007bff;
+    font-weight: 600;
+    font-size: 0.9em;
+    user-select: none;
+  }
+  #mail-status {
+    margin-top: 10px;
+    font-weight: 700;
+    min-height: 24px;
+    font-size: 1.1em;
+    text-align: center;
+    border-radius: 8px;
+    padding: 6px 12px;
+    transition: all 0.4s;
+  }
+  #mail-status.success {
+    color: #1b5e20;
+    background: #a5d6a7;
+    box-shadow: 0 0 10px #4caf50;
+  }
+  #mail-status.error {
+    color: #d32f2f;
+    background: #ef9a9a;
+    box-shadow: 0 0 10px #d32f2f;
+  }
+  .hidden {
+    visibility: hidden;
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+  }
+</style>
 </head>
 <body>
 
@@ -139,48 +140,57 @@
 <script>
 let menu = [];
 fetch("list.txt").then(resp=>resp.text()).then(txt=>{
-    let lines = txt.split(/\r?\n/);
-    menu = lines.filter(l=>l.trim()).map((line,idx)=>{
-        let m = line.match(/^(.+?),['"](.+)['"]$/);
-        if(m){
-            return {id:idx, img:m[1].trim(), name:m[2].trim()};
-        }
-    }).filter(Boolean);
-    renderMenu();
+  let lines = txt.split(/\r?\n/);
+  menu = lines.filter(l=>l.trim()).map((line,idx)=>{
+    let m = line.match(/^(.+?),['"](.+)['"]$/);
+    if(m){
+      return {id:idx, img:m[1].trim(), name:m[2].trim()};
+    }
+  }).filter(Boolean);
+  renderMenu();
 });
 
 let cart = [];
 let orders = [];
 
 function addCart(id){
-  let found = cart.find(i=>i.id===id);
-  if(found) found.qty++;
-  else cart.push({id:id,qty:1});
-  console.log("已加入购物车"); // 替代 alert 避免阻塞渲染
-  requestAnimationFrame(() => {
-    renderCart();
-  });
+  let found = cart.find(i=>i.id === id);
+  if (found) found.qty++;
+  else cart.push({id:id, qty:1});
+
+  updateMenuQtyDisplay(id);
+  renderCart();
+
+  setMessage(`已经成功加入“${menu.find(m => m.id === id).name}”到购物车。`);
+}
+
+function updateMenuQtyDisplay(id){
+  const item = cart.find(i => i.id === id);
+  const qtySpan = document.querySelector(`#menu-item-${id} .qty-display`);
+  if(item && qtySpan){
+    qtySpan.textContent = `数量：${item.qty}`;
+    qtySpan.style.display = 'block';
+  } else if(qtySpan){
+    qtySpan.style.display = 'none';
+  }
 }
 
 function showView(name){
   for(const view of ['menu','cart','orders']){
     const el = document.getElementById(view);
-    if(view === name){
-      el.classList.remove('hidden');
-    } else {
-      el.classList.add('hidden');
-    }
+    el.classList.toggle('hidden', view !== name);
   }
-  if(name==='cart') renderCart();
-  if(name==='orders') renderOrders();
+  if(name === 'cart') renderCart();
+  if(name === 'orders') renderOrders();
 }
 
 function renderMenu(){
   let html = "";
   menu.forEach(item=>{
-    html += `<div class="menu-item">
+    html += `<div class="menu-item" id="menu-item-${item.id}">
       <img class="menu-photo" src="${item.img}" alt="${item.name}">
       <span>${item.name}</span>
+      <div class="qty-display" style="display:none;"></div>
       <button onclick="addCart(${item.id})">加入购物车</button>
     </div>`;
   });
@@ -190,7 +200,7 @@ function renderMenu(){
 function renderCart(){
   let html = "";
   cart.forEach(item=>{
-    let mi = menu.find(i=>i.id===item.id);
+    let mi = menu.find(i=>i.id === item.id);
     html += `<div class="cart-item">
       <img class="menu-photo" src="${mi.img}" alt="${mi.name}">
       <span>${mi.name} x${item.qty}</span>
@@ -199,33 +209,41 @@ function renderCart(){
   });
   const cartList = document.getElementById('cart-list');
   cartList.innerHTML = html || "<p>购物车为空</p>";
+  clearMessage();
   const mailStatus = document.getElementById('mail-status');
-  mailStatus.innerText = ""; // 清除邮件提示
+  mailStatus.innerText = ""; 
   mailStatus.classList.remove('success', 'error');
+  menu.forEach(mi => updateMenuQtyDisplay(mi.id));
 
-  // 强制重绘，解决Safari局部渲染bug
+  // 强制重绘，解决Safari渲染bug
   cartList.style.display = 'none';
-  cartList.offsetHeight; // 触发布局与回流
+  cartList.offsetHeight;
   cartList.style.display = '';
 }
 
 function removeCart(id){
-  cart = cart.filter(i=>i.id!==id);
+  cart = cart.filter(i=>i.id !== id);
   renderCart();
 }
 
+// 订单历史
 function renderOrders(){
-  let html="";
-  if(!orders.length) html="<p>暂无订单</p>";
-  else orders.forEach((order,i)=>{html+=`<div>第${i+1}单:  ${order.time}, 明细: ${order.detail}</div>`;});
+  let html = "";
+  if(!orders.length) html = "<p>暂无订单</p>";
+  else orders.forEach((order,i) => {
+    html += `<div>第${i + 1}单: ${order.time}, 明细: ${order.detail}</div>`;
+  });
   document.getElementById('order-list').innerHTML = html;
 }
 
-// 直接发送给指定收件邮箱
+// 邮件发送
 function sendOrderEmail() {
-  if (!cart.length) { alert("购物车为空"); return; }
+  if(!cart.length) {
+    setMessage('购物车为空，无法结算。', true);
+    return;
+  }
   let email = "kxpgta5@126.com";
-  let items = cart.map(item => {
+  let items = cart.map(item=>{
     let m = menu.find(mi => mi.id === item.id);
     return `${m.name} x${item.qty}`;
   });
@@ -240,7 +258,7 @@ function sendOrderEmail() {
     mailStatus.classList.remove('error');
     mailStatus.classList.add('success');
     orders.push({ time: new Date().toLocaleString(), detail: items.join(', ') });
-    cart = []; // 清空购物车
+    cart = [];
     renderCart();
     renderOrders();
   }, function(error) {
@@ -250,6 +268,26 @@ function sendOrderEmail() {
     mailStatus.classList.add('error');
     console.log(error);
   });
+}
+
+// 页面顶部文字提示
+function setMessage(msg, isError = false) {
+  const status = document.getElementById('mail-status');
+  status.innerText = msg;
+  if(isError){
+    status.classList.remove('success');
+    status.classList.add('error');
+  } else{
+    status.classList.remove('error');
+    status.classList.add('success');
+  }
+}
+
+// 清除提示
+function clearMessage(){
+  const status = document.getElementById('mail-status');
+  status.innerText = '';
+  status.classList.remove('success', 'error');
 }
 </script>
 
