@@ -149,6 +149,7 @@ function addCart(id){
   if(found) found.qty++;
   else cart.push({id:id,qty:1});
   alert("已加入购物车");
+  renderCart();  // 加入购物车后即时刷新购物车显示
 }
 
 function showView(name){
