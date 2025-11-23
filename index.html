@@ -54,6 +54,12 @@
     grid-auto-rows: minmax(160px, auto);
     padding-bottom: 20px;
   }
+  /* 购物车列表使用双列网格 */
+  #cart-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
   .menu-item, .cart-item {
     background: white;
     border-radius: 14px;
