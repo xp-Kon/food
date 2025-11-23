@@ -118,7 +118,7 @@ function sendOrderEmail() {
   emailjs.send("service_c1c8cug", "template_default", {
     to_email: email,
     message: orderText
-  }, "EZnl5_7LsLHTsg0omm")
+  }, "EZnI5_7sLHTsg0omm")
   .then(function() {
     document.getElementById('mail-status').innerText = "发送成功！请查收邮箱";
     orders.push({ time: new Date().toLocaleString(), detail: items.join(', ') });
