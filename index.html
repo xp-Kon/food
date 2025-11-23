@@ -211,11 +211,10 @@ function renderCart(){
   cartList.innerHTML = html || "<p>购物车为空</p>";
   clearMessage();
   const mailStatus = document.getElementById('mail-status');
-  mailStatus.innerText = ""; 
+  mailStatus.innerText = "";
   mailStatus.classList.remove('success', 'error');
   menu.forEach(mi => updateMenuQtyDisplay(mi.id));
 
-  // 强制重绘，解决Safari渲染bug
   cartList.style.display = 'none';
   cartList.offsetHeight;
   cartList.style.display = '';
@@ -226,7 +225,6 @@ function removeCart(id){
   renderCart();
 }
 
-// 订单历史
 function renderOrders(){
   let html = "";
   if(!orders.length) html = "<p>暂无订单</p>";
@@ -236,7 +234,6 @@ function renderOrders(){
   document.getElementById('order-list').innerHTML = html;
 }
 
-// 邮件发送
 function sendOrderEmail() {
   if(!cart.length) {
     setMessage('购物车为空，无法结算。', true);
@@ -257,10 +254,16 @@ function sendOrderEmail() {
     mailStatus.innerText = "发送成功！请查收邮箱";
     mailStatus.classList.remove('error');
     mailStatus.classList.add('success');
+
     orders.push({ time: new Date().toLocaleString(), detail: items.join(', ') });
     cart = [];
     renderCart();
     renderOrders();
+
+    setTimeout(() => {
+      mailStatus.innerText = "";
+      mailStatus.classList.remove('success');
+    }, 5000);
   }, function(error) {
     let mailStatus = document.getElementById('mail-status');
     mailStatus.innerText = "发送失败：" + error.text;
@@ -270,7 +273,6 @@ function sendOrderEmail() {
   });
 }
 
-// 页面顶部文字提示
 function setMessage(msg, isError = false) {
   const status = document.getElementById('mail-status');
   status.innerText = msg;
@@ -283,7 +285,6 @@ function setMessage(msg, isError = false) {
   }
 }
 
-// 清除提示
 function clearMessage(){
   const status = document.getElementById('mail-status');
   status.innerText = '';
