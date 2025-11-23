@@ -2,20 +2,19 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>菜单网页（全前端邮件下单，无子目录）</title>
+  <title>菜单网页（双列+默认收件邮箱）</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
     body {font-family:sans-serif;background:#e7fbe3;}
     #menu, #cart, #orders {margin:24px auto; max-width:420px;}
-    .menu-item, .cart-item {display:flex;flex-direction:column;align-items:center;padding:14px;border-bottom:1px solid #dde;}
-    .menu-photo {width:150px; height:130px; object-fit:cover; border-radius:10px;}
-    button {padding:6px 18px;background:#8bd8fa;border:none;border-radius:9px;cursor:pointer;margin:12px;}
+    #menu-list {display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    .menu-item, .cart-item {display:flex;flex-direction:column;align-items:center;padding:14px;border-bottom:1px solid #dde;
+      box-shadow:0 0 8px #ddd; border-radius:12px; background:#fff; margin:0;}
+    .menu-photo {width:130px; height:110px; object-fit:cover; border-radius:8px;}
+    button {padding:6px 18px;background:#8bd8fa;border:none;border-radius:9px;cursor:pointer;margin:10px;}
     .hidden {display:none;}
     h1 {text-align:center;color:#247;}
     #nav {display:flex;gap:18px;justify-content:center;margin:24px;}
-    #email-modal {position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:24px;border-radius:12px;box-shadow:0 0 12px #9ae;}
-    #email-modal input {width:250px;padding:7px;margin-bottom:15px;}
-    #email-modal.hidden{display:none;}
     #mail-status {margin-top:10px;color:#d44;}
   </style>
 </head>
@@ -35,24 +34,16 @@
 <div id="cart" class="hidden">
   <h2>购物车</h2>
   <div id="cart-list"></div>
-  <button onclick="checkout()">去结算</button>
+  <button onclick="sendOrderEmail()">去结算</button>
+  <div id="mail-status"></div>
 </div>
 <div id="orders" class="hidden">
   <h2>历史订单</h2>
   <div id="order-list"></div>
 </div>
-<div id="email-modal" class="hidden">
-  <h3>请输入接收订单的邮箱：</h3>
-  <input id="userEmail" placeholder="your@email.com" type="email" required>
-  <br>
-  <button onclick="sendOrderEmail()">提交订单</button>
-  <button onclick="hideEmailModal()">取消</button>
-  <div id="mail-status"></div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
-// ------ 读取list.txt获取菜单 ------
 let menu = [];
 fetch("list.txt").then(resp=>resp.text()).then(txt=>{
     let lines = txt.split(/\r?\n/);
@@ -73,7 +64,6 @@ function addCart(id){
   else cart.push({id:id,qty:1});
   alert("已加入购物车");
 }
-
 function showView(name){
   for(const view of ['menu','cart','orders']){
     document.getElementById(view).classList.toggle('hidden',view!==name);
@@ -81,7 +71,6 @@ function showView(name){
   if(name==='cart') renderCart();
   if(name==='orders') renderOrders();
 }
-
 function renderMenu(){
   let html = "";
   menu.forEach(item=>{
@@ -93,7 +82,6 @@ function renderMenu(){
   });
   document.getElementById('menu-list').innerHTML = html;
 }
-
 function renderCart(){
   let html = "";
   cart.forEach(item=>{
@@ -105,13 +93,12 @@ function renderCart(){
     </div>`;
   });
   document.getElementById('cart-list').innerHTML = html || "<p>购物车为空</p>";
+  document.getElementById('mail-status').innerText = ""; // 清除邮件提示
 }
-
 function removeCart(id){
   cart = cart.filter(i=>i.id!==id);
   renderCart();
 }
-
 function renderOrders(){
   let html="";
   if(!orders.length) html="<p>暂无订单</p>";
@@ -119,37 +106,25 @@ function renderOrders(){
   document.getElementById('order-list').innerHTML = html;
 }
 
-function checkout(){
-  if(!cart.length) {alert("购物车为空");return;}
-  document.getElementById('userEmail').value="";
-  document.getElementById('mail-status').innerText="";
-  showEmailModal();
-}
-
-function showEmailModal(){document.getElementById('email-modal').classList.remove('hidden');}
-function hideEmailModal(){document.getElementById('email-modal').classList.add('hidden');}
-
-// 用 EmailJS 发送订单邮件
+// 直接发送给指定收件邮箱
 function sendOrderEmail(){
-  let email = document.getElementById('userEmail').value;
-  if(!email) return alert("请输入邮箱！");
+  if(!cart.length) {alert("购物车为空");return;}
+  let email = "1374198709@qq.com";
   let items = cart.map(item=>{
     let m = menu.find(mi=>mi.id===item.id);
     return `${m.name} x${item.qty}`;
   });
   let orderText = `菜单订单如下：\n${items.join('\n')}\n`;
-  // 填你的 EmailJS 服务ID、模板ID和 Public Key
   emailjs.send("service_c1c8cug", "template_default", {
-    to_email: '1374198709@qq.com',
+    to_email: email,
     message: orderText
-  }, "EZnl5_7LsLHTsg0omm") // 用户ID为 Public Key
+  }, "EZnl5_7LsLHTsg0omm")
   .then(function() {
     document.getElementById('mail-status').innerText="发送成功！请查收邮箱";
     orders.push({time: new Date().toLocaleString(),detail:items.join(', ')});
     cart=[]; // 清空
     renderCart();
     renderOrders();
-    setTimeout(hideEmailModal,1200);
   }, function(error) {
     document.getElementById('mail-status').innerText="发送失败，请检查网络或稍后再试";
   });
