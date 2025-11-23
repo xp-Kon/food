@@ -36,15 +36,20 @@
     box-shadow: 0 4px 8px rgb(60 174 163 / 0.5);
     transition: background 0.3s, transform 0.2s;
     flex-basis: auto;
-    margin: 10px auto 0 auto; /* 按钮水平居中 */
-    display: block; /* 确保margin auto生效 */
+    margin: 10px auto 0 auto;
+    display: block;
     max-width: 120px;
   }
-  button:hover {
+  button:disabled {
+    background: #007bff; /* 蓝色，禁用样式 */
+    cursor: default;
+    box-shadow: none;
+  }
+  button:hover:not(:disabled) {
     background: #278d85;
     transform: scale(1.05);
   }
-  button:active {
+  button:active:not(:disabled) {
     transform: scale(0.95);
   }
   #menu-list {
@@ -54,7 +59,6 @@
     grid-auto-rows: minmax(160px, auto);
     padding-bottom: 20px;
   }
-  /* 购物车列表使用双列网格 */
   #cart-list {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -134,7 +138,7 @@
 <div id="cart" class="hidden">
   <h2>购物车</h2>
   <div id="cart-list"></div>
-  <button onclick="sendOrderEmail()">去结算</button>
+  <button id="checkout-btn" onclick="sendOrderEmail()">去结算</button>
   <div id="mail-status"></div>
 </div>
 <div id="orders" class="hidden">
@@ -159,6 +163,8 @@ fetch("list.txt").then(resp=>resp.text()).then(txt=>{
 let cart = [];
 let orders = [];
 
+const checkoutBtn = document.getElementById('checkout-btn');
+
 function addCart(id){
   let found = cart.find(i=>i.id === id);
   if (found) found.qty++;
@@ -168,6 +174,7 @@ function addCart(id){
   renderCart();
 
   setMessage(`已经成功加入“${menu.find(m => m.id === id).name}”到购物车。`);
+  updateCheckoutButton(true); // 恢复按钮可用和默认文字
 }
 
 function updateMenuQtyDisplay(id){
@@ -178,6 +185,22 @@ function updateMenuQtyDisplay(id){
     qtySpan.style.display = 'block';
   } else if(qtySpan){
     qtySpan.style.display = 'none';
+  }
+}
+
+function updateCheckoutButton(enabled){
+  if(enabled){
+    checkoutBtn.disabled = false;
+    checkoutBtn.textContent = '去结算';
+    checkoutBtn.style.background = '#3caea3'; // 原色
+    checkoutBtn.style.cursor = 'pointer';
+    checkoutBtn.style.boxShadow = '0 4px 8px rgb(60 174 163 / 0.5)';
+  } else {
+    checkoutBtn.disabled = true;
+    checkoutBtn.textContent = '结算成功';
+    checkoutBtn.style.background = '#007bff'; // 蓝色
+    checkoutBtn.style.cursor = 'default';
+    checkoutBtn.style.boxShadow = 'none';
   }
 }
 
@@ -265,6 +288,8 @@ function sendOrderEmail() {
     cart = [];
     renderCart();
     renderOrders();
+
+    updateCheckoutButton(false); // 发送成功禁用按钮并变蓝色显示
 
     setTimeout(() => {
       mailStatus.innerText = "";
