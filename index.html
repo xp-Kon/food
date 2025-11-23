@@ -109,7 +109,7 @@ function renderOrders(){
 // 直接发送给指定收件邮箱
 function sendOrderEmail() {
   if (!cart.length) { alert("购物车为空"); return; }
-  let email = "1374198709@qq.com";
+  let email = "kxpgta5@126.com";
   let items = cart.map(item => {
     let m = menu.find(mi => mi.id === item.id);
     return `${m.name} x${item.qty}`;
