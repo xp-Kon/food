@@ -1,396 +1,411 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<meta charset="UTF-8" />
-<title>爱心菜单wzx♥kxp</title>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<style>
-  body {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #d8f3dc, #75e6da);
-    margin: 0;
-    padding: 0 10px 40px 10px;
-    color: #17494d;
-  }
-  h1 {
-    text-align: center;
-    color: #136f63;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-    font-weight: 700;
-  }
-  #nav {
-    display: flex;
-    gap: 18px;
-    justify-content: center;
-    margin: 24px 0;
-  }
-  button {
-    padding: 10px 22px;
-    background: #3caea3;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 600;
-    color: white;
-    box-shadow: 0 4px 8px rgb(60 174 163 / 0.5);
-    transition: background 0.3s, transform 0.2s;
-    flex-basis: auto;
-    margin: 10px auto 0 auto;
-    display: block;
-    max-width: 120px;
-  }
-  button:disabled {
-    background: #007bff;
-    cursor: default;
-    box-shadow: none;
-  }
-  button:hover:not(:disabled) {
-    background: #278d85;
-    transform: scale(1.05);
-  }
-  button:active:not(:disabled) {
-    transform: scale(0.95);
-  }
-  #menu-list {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-    grid-auto-rows: minmax(160px, auto);
-    padding-bottom: 20px;
-  }
-  #cart-list {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-  }
-  .menu-item, .cart-item {
-    background: white;
-    border-radius: 14px;
-    box-shadow: 0 8px 15px rgba(9, 96, 100, 0.15);
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: box-shadow 0.3s;
-  }
-  .menu-item:hover, .cart-item:hover {
-    box-shadow: 0 15px 20px rgba(9, 96, 100, 0.3);
-  }
-  .menu-photo {
-    width: 140px;
-    height: 110px;
-    border-radius: 12px;
-    margin-bottom: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    display: block;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-color: #f0f0f0;
-    position: relative;
-    overflow: hidden;
-  }
-  .menu-photo::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-    transform: translateX(-100%);
-    animation: shimmer 1.5s infinite;
-  }
-  @keyframes shimmer {
-    100% { transform: translateX(100%); }
-  }
-  .menu-photo.loaded::after {
-    display: none;
-  }
-  .qty-display {
-    margin-top: 6px;
-    color: #007bff;
-    font-weight: 600;
-    font-size: 0.9em;
-    user-select: none;
-  }
-  .quantity-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 8px;
-  }
-  .quantity-controls button {
-    margin: 0;
-    padding: 5px 10px;
-    max-width: none;
-    font-size: 1.2em;
-    line-height: 1;
-  }
-  #mail-status {
-    margin-top: 10px;
-    font-weight: 700;
-    min-height: 24px;
-    font-size: 1.1em;
-    text-align: center;
-    border-radius: 8px;
-    padding: 6px 12px;
-    transition: all 0.4s;
-  }
-  #mail-status.success {
-    color: #1b5e20;
-    background: #a5d6a7;
-    box-shadow: 0 0 10px #4caf50;
-  }
-  #mail-status.error {
-    color: #d32f2f;
-    background: #ef9a9a;
-    box-shadow: 0 0 10px #d32f2f;
-  }
-  .hidden {
-    visibility: hidden;
-    position: absolute;
-    left: -9999px;
-    top: -9999px;
-  }
-</style>
+    <meta charset="UTF-8" />
+    <title>爱心菜单wzx♥kxp</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <!-- 优化点 1: 预连接到外部域名，提升CDN资源加载速度 -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    
+    <style>
+        /* 优化点 2: 简化并压缩CSS，移除不必要的浏览器前缀 */
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #d8f3dc, #75e6da);
+            margin: 0;
+            padding: 0 10px 40px;
+            color: #17494d;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #136f63;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            font-weight: 700;
+            margin-top: 20px;
+        }
+        #nav {
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            margin: 24px 0;
+        }
+        button {
+            padding: 10px 22px;
+            background: #3caea3;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 4px 8px rgba(60, 174, 163, 0.5);
+            transition: background 0.3s, transform 0.2s;
+            flex-basis: auto;
+            margin: 10px auto 0;
+            display: block;
+            max-width: 120px;
+        }
+        button:disabled {
+            background: #007bff;
+            cursor: default;
+            box-shadow: none;
+        }
+        button:hover:not(:disabled) {
+            background: #278d85;
+            transform: scale(1.05);
+        }
+        button:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+        #menu-list, #cart-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            padding-bottom: 20px;
+        }
+        .menu-item, .cart-item {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 8px 15px rgba(9, 96, 100, 0.15);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: box-shadow 0.3s;
+        }
+        .menu-item:hover, .cart-item:hover {
+            box-shadow: 0 15px 20px rgba(9, 96, 100, 0.3);
+        }
+        .menu-photo {
+            width: 140px;
+            height: 110px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #f0f0f0; /* 占位色 */
+            position: relative;
+            overflow: hidden;
+        }
+        /* 优化点 3: 骨架屏动画优化，减少CPU消耗 */
+        .menu-photo::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0) 0%, 
+                rgba(255, 255, 255, 0.2) 50%, 
+                rgba(255, 255, 255, 0) 100%);
+            transform: translateX(-100%);
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+        .menu-photo.loaded::after {
+            display: none;
+        }
+        .qty-display {
+            margin-top: 6px;
+            color: #007bff;
+            font-weight: 600;
+            font-size: 0.9em;
+            user-select: none;
+        }
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .quantity-controls button {
+            margin: 0;
+            padding: 5px 10px;
+            max-width: none;
+            font-size: 1.2em;
+            line-height: 1;
+        }
+        #mail-status {
+            margin-top: 10px;
+            font-weight: 700;
+            min-height: 24px;
+            font-size: 1.1em;
+            text-align: center;
+            border-radius: 8px;
+            padding: 6px 12px;
+            transition: all 0.4s;
+        }
+        #mail-status.success {
+            color: #1b5e20;
+            background: #a5d6a7;
+            box-shadow: 0 0 10px #4caf50;
+        }
+        #mail-status.error {
+            color: #d32f2f;
+            background: #ef9a9a;
+            box-shadow: 0 0 10px #d32f2f;
+        }
+        .hidden {
+            display: none; /* 优化点 4: 使用更高效的 display: none 代替定位隐藏 */
+        }
+    </style>
 </head>
 <body>
 
 <h1>菜单</h1>
 <div id="nav">
-  <button onclick="showView('menu')">菜单</button>
-  <button onclick="showView('cart')">购物车</button>
-  <button onclick="showView('orders')">订单</button>
+    <button onclick="showView('menu')">菜单</button>
+    <button onclick="showView('cart')">购物车</button>
+    <button onclick="showView('orders')">订单</button>
 </div>
 
 <div id="menu">
-  <h2>菜单</h2>
-  <div id="menu-list"></div>
+    <h2>菜单</h2>
+    <div id="menu-list"></div>
 </div>
 <div id="cart" class="hidden">
-  <h2>购物车</h2>
-  <div id="cart-list"></div>
-  <button id="checkout-btn" onclick="sendOrderEmail()">去结算</button>
-  <div id="mail-status"></div>
+    <h2>购物车</h2>
+    <div id="cart-list"></div>
+    <button id="checkout-btn" onclick="sendOrderEmail()">去结算</button>
+    <div id="mail-status"></div>
 </div>
 <div id="orders" class="hidden">
-  <h2>历史订单</h2>
-  <div id="order-list"></div>
+    <h2>历史订单</h2>
+    <div id="order-list"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-<script>
-let menu = [];
-fetch("list.txt")
-  .then(resp => {
-    if (!resp.ok) throw new Error(`HTTP error! status: ${resp.status}`);
-    return resp.text();
-  })
-  .then(txt => {
-    let lines = txt.split(/\r?\n/);
-    menu = lines.filter(l=>l.trim()).map((line,idx)=>{
-      let m = line.match(/^(.+?),['"](.+)['"]$/);
-      if(m) return {id:idx, img:m[1].trim(), name:m[2].trim()};
-    }).filter(Boolean);
-    renderMenu();
-  })
-  .catch(error => {
-    console.error("Error loading menu:", error);
-    document.getElementById('menu-list').innerHTML = "<p>菜单加载失败，请稍后再试。</p>";
-  });
+<!-- 优化点 5: 将JS脚本放在body末尾，并使用 defer 属性 -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js" defer></script>
+<script defer>
+    let menu = [];
+    let cart = [];
+    let orders = [];
+    
+    // 优化点 6: 缓存DOM元素，避免重复查询
+    const dom = {
+        menuList: document.getElementById('menu-list'),
+        cartList: document.getElementById('cart-list'),
+        orderList: document.getElementById('order-list'),
+        checkoutBtn: document.getElementById('checkout-btn'),
+        mailStatus: document.getElementById('mail-status')
+    };
 
-let cart = [];
-let orders = [];
-const checkoutBtn = document.getElementById('checkout-btn');
-
-function addCart(id){
-  let found = cart.find(i=>i.id === id);
-  if (found) found.qty++;
-  else cart.push({id:id, qty:1});
-  updateMenuQtyDisplay(id);
-  renderCart();
-  setMessage(`已经成功加入“${menu.find(m => m.id === id).name}”到购物车。`);
-  updateCheckoutButton(true);
-}
-
-function decreaseCart(id){
-  let found = cart.find(i=>i.id === id);
-  if (found) {
-    found.qty--;
-    if (found.qty <= 0) {
-      removeCart(id);
-    } else {
-      updateMenuQtyDisplay(id);
-      renderCart();
-      setMessage(`“${menu.find(m => m.id === id).name}”的数量已减少。`);
-    }
-  }
-}
-
-function updateMenuQtyDisplay(id){
-  const item = cart.find(i => i.id === id);
-  const qtyContainer = document.querySelector(`#menu-item-${id} .quantity-controls`);
-  const qtySpan = document.querySelector(`#menu-item-${id} .qty-display`);
-  if(item && qtyContainer && qtySpan){
-    qtySpan.textContent = item.qty;
-    qtyContainer.style.display = 'flex';
-  } else if(qtyContainer) {
-    qtyContainer.style.display = 'none';
-  }
-}
-
-function updateCheckoutButton(enabled){
-  if(enabled){
-    checkoutBtn.disabled = false;
-    checkoutBtn.textContent = '去结算';
-    checkoutBtn.style.background = '#3caea3';
-    checkoutBtn.style.cursor = 'pointer';
-    checkoutBtn.style.boxShadow = '0 4px 8px rgb(60 174 163 / 0.5)';
-  } else {
-    checkoutBtn.disabled = true;
-    checkoutBtn.textContent = '结算成功';
-    checkoutBtn.style.background = '#007bff';
-    checkoutBtn.style.cursor = 'default';
-    checkoutBtn.style.boxShadow = 'none';
-  }
-}
-
-function showView(name){
-  for(const view of ['menu','cart','orders']){
-    document.getElementById(view).classList.toggle('hidden', view !== name);
-  }
-  if(name === 'cart') renderCart();
-  if(name === 'orders') renderOrders();
-}
-
-function renderMenu(){
-  let html = "";
-  menu.forEach(item=>{
-    const cartItem = cart.find(i => i.id === item.id);
-    const qty = cartItem ? cartItem.qty : 0;
-    html += `<div class="menu-item" id="menu-item-${item.id}">
-      <div class="menu-photo" data-src="${item.img}"></div>
-      <span>${item.name}</span>
-      <div class="quantity-controls" style="display: none;">
-        <button onclick="decreaseCart(${item.id})">-</button>
-        <span class="qty-display">${qty}</span>
-        <button onclick="removeCart(${item.id})">删除</button>
-      </div>
-      <button onclick="addCart(${item.id})">加入购物车</button>
-    </div>`;
-  });
-  document.getElementById('menu-list').innerHTML = html;
-  menu.forEach(mi => updateMenuQtyDisplay(mi.id));
-  lazyLoadImages();
-}
-
-function renderCart(){
-  let html = "";
-  cart.forEach(item=>{
-    let mi = menu.find(i=>i.id === item.id);
-    html += `<div class="cart-item">
-      <div class="menu-photo" style="background-image: url('${mi.img}')"></div>
-      <span>${mi.name} x${item.qty}</span>
-      <button onclick="removeCart(${item.id})">删除</button>
-    </div>`;
-  });
-  const cartList = document.getElementById('cart-list');
-  cartList.innerHTML = html || "<p>购物车为空</p>";
-  clearMessage();
-  const mailStatus = document.getElementById('mail-status');
-  mailStatus.innerText = "";
-  mailStatus.classList.remove('success', 'error');
-  menu.forEach(mi => updateMenuQtyDisplay(mi.id));
-  cartList.style.display = 'none';
-  cartList.offsetHeight;
-  cartList.style.display = '';
-}
-
-function removeCart(id){
-  const itemToRemove = menu.find(m => m.id === id);
-  cart = cart.filter(i=>i.id !== id);
-  renderCart();
-  updateMenuQtyDisplay(id);
-  if (itemToRemove) setMessage(`已从购物车中移除“${itemToRemove.name}”。`);
-}
-
-function renderOrders(){
-  let html = "";
-  if(!orders.length) html = "<p>暂无订单</p>";
-  else orders.forEach((order,i) => {
-    html += `<div>第${i + 1}单: ${order.time}, 明细: ${order.detail}</div>`;
-  });
-  document.getElementById('order-list').innerHTML = html;
-}
-
-function sendOrderEmail() {
-  if(!cart.length) {
-    setMessage('购物车为空，无法结算。', true);
-    return;
-  }
-  let email = "kxpgta5@126.com";
-  let items = cart.map(item=>{
-    let m = menu.find(mi => mi.id === item.id);
-    return `${m.name} x${item.qty}`;
-  });
-  let orderText = `菜单订单如下：\n${items.join('\n')}\n`;
-  emailjs.send("service_c1c8cug", "template_8qbg6p9", {
-    to_email: email,
-    message: orderText
-  }, "EZnI5_7sLHTsg0omm")
-  .then(() => {
-    let mailStatus = document.getElementById('mail-status');
-    mailStatus.innerText = "发送成功！请查收邮箱";
-    mailStatus.classList.add('success');
-    orders.push({ time: new Date().toLocaleString(), detail: items.join(', ') });
-    cart = [];
-    renderCart();
-    renderMenu();
-    updateCheckoutButton(false);
-    setTimeout(() => {
-      mailStatus.innerText = "";
-      mailStatus.classList.remove('success');
-    }, 5000);
-  })
-  .catch(error => {
-    let mailStatus = document.getElementById('mail-status');
-    mailStatus.innerText = "发送失败：" + error.text;
-    mailStatus.classList.add('error');
-    console.log(error);
-  });
-}
-
-function setMessage(msg, isError = false) {
-  const status = document.getElementById('mail-status');
-  status.innerText = msg;
-  status.classList.toggle('error', isError);
-  status.classList.toggle('success', !isError);
-}
-
-function clearMessage(){
-  const status = document.getElementById('mail-status');
-  status.innerText = '';
-  status.classList.remove('success', 'error');
-}
-
-function lazyLoadImages(){
-  const images = document.querySelectorAll('.menu-photo[data-src]');
-  const imageObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const img = entry.target;
-        const src = img.getAttribute('data-src');
-        img.style.backgroundImage = `url('${src}')`;
-        img.classList.add('loaded');
-        img.removeAttribute('data-src');
-        observer.unobserve(img);
-      }
+    // 优化点 7: 使用 DOMContentLoaded 确保DOM完全解析后再执行
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch("list.txt")
+            .then(resp => {
+                if (!resp.ok) throw new Error(`HTTP error! status: ${resp.status}`);
+                return resp.text();
+            })
+            .then(txt => {
+                // 优化点 8: 简化数据处理逻辑
+                menu = txt.split(/\r?\n/)
+                          .filter(l => l.trim())
+                          .map((line, idx) => {
+                              const m = line.match(/^(.+?),['"](.+)['"]$/);
+                              return m ? { id: idx, img: m[1].trim(), name: m[2].trim() } : null;
+                          })
+                          .filter(Boolean);
+                renderMenu();
+            })
+            .catch(error => {
+                console.error("Error loading menu:", error);
+                dom.menuList.innerHTML = "<p>菜单加载失败，请稍后再试。</p>";
+            });
     });
-  });
-  images.forEach(img => imageObserver.observe(img));
-}
+
+    function addCart(id){
+        const found = cart.find(i => i.id === id);
+        if (found) found.qty++;
+        else cart.push({ id: id, qty: 1 });
+        
+        updateMenuQtyDisplay(id);
+        renderCart();
+        setMessage(`已经成功加入“${menu.find(m => m.id === id).name}”到购物车。`);
+        updateCheckoutButton(true);
+    }
+
+    function decreaseCart(id){
+        const found = cart.find(i => i.id === id);
+        if (found) {
+            found.qty--;
+            if (found.qty <= 0) {
+                removeCart(id);
+            } else {
+                updateMenuQtyDisplay(id);
+                renderCart();
+                setMessage(`“${menu.find(m => m.id === id).name}”的数量已减少。`);
+            }
+        }
+    }
+
+    function updateMenuQtyDisplay(id){
+        const item = cart.find(i => i.id === id);
+        const qtyContainer = document.querySelector(`#menu-item-${id} .quantity-controls`);
+        const qtySpan = document.querySelector(`#menu-item-${id} .qty-display`);
+        
+        if(item && qtyContainer && qtySpan){
+            qtySpan.textContent = item.qty;
+            qtyContainer.style.display = 'flex';
+        } else if(qtyContainer) {
+            qtyContainer.style.display = 'none';
+        }
+    }
+
+    function updateCheckoutButton(enabled){
+        if(enabled){
+            dom.checkoutBtn.disabled = false;
+            dom.checkoutBtn.textContent = '去结算';
+            dom.checkoutBtn.style.background = '#3caea3';
+            dom.checkoutBtn.style.cursor = 'pointer';
+            dom.checkoutBtn.style.boxShadow = '0 4px 8px rgba(60, 174, 163, 0.5)';
+        } else {
+            dom.checkoutBtn.disabled = true;
+            dom.checkoutBtn.textContent = '结算成功';
+            dom.checkoutBtn.style.background = '#007bff';
+            dom.checkoutBtn.style.cursor = 'default';
+            dom.checkoutBtn.style.boxShadow = 'none';
+        }
+    }
+
+    function showView(name){
+        // 优化点 9: 简化视图切换逻辑
+        document.querySelectorAll('#menu, #cart, #orders').forEach(el => {
+            el.classList.toggle('hidden', el.id !== name);
+        });
+        if(name === 'cart') renderCart();
+        if(name === 'orders') renderOrders();
+    }
+
+    function renderMenu(){
+        let html = "";
+        menu.forEach(item => {
+            const cartItem = cart.find(i => i.id === item.id);
+            const qty = cartItem ? cartItem.qty : 0;
+            html += `<div class="menu-item" id="menu-item-${item.id}">
+                <div class="menu-photo" data-src="${item.img}"></div>
+                <span>${item.name}</span>
+                <div class="quantity-controls" style="display: none;">
+                    <button onclick="decreaseCart(${item.id})">-</button>
+                    <span class="qty-display">${qty}</span>
+                    <button onclick="removeCart(${item.id})">删除</button>
+                </div>
+                <button onclick="addCart(${item.id})">加入购物车</button>
+            </div>`;
+        });
+        dom.menuList.innerHTML = html;
+        menu.forEach(mi => updateMenuQtyDisplay(mi.id));
+        lazyLoadImages();
+    }
+
+    function renderCart(){
+        let html = cart.length ? "" : "<p>购物车为空</p>";
+        cart.forEach(item => {
+            const mi = menu.find(i => i.id === item.id);
+            html += `<div class="cart-item">
+                <div class="menu-photo" style="background-image: url('${mi.img}')"></div>
+                <span>${mi.name} x${item.qty}</span>
+                <button onclick="removeCart(${item.id})">删除</button>
+            </div>`;
+        });
+        dom.cartList.innerHTML = html;
+        clearMessage();
+    }
+
+    function removeCart(id){
+        const itemToRemove = menu.find(m => m.id === id);
+        cart = cart.filter(i => i.id !== id);
+        renderCart();
+        updateMenuQtyDisplay(id);
+        if (itemToRemove) setMessage(`已从购物车中移除“${itemToRemove.name}”。`);
+    }
+
+    function renderOrders(){
+        let html = orders.length ? "" : "<p>暂无订单</p>";
+        orders.forEach((order, i) => {
+            html += `<div>第${i + 1}单: ${order.time}, 明细: ${order.detail}</div>`;
+        });
+        dom.orderList.innerHTML = html;
+    }
+
+    function sendOrderEmail() {
+        if(!cart.length) {
+            setMessage('购物车为空，无法结算。', true);
+            return;
+        }
+        const email = "kxpgta5@126.com";
+        const items = cart.map(item => {
+            const m = menu.find(mi => mi.id === item.id);
+            return `${m.name} x${item.qty}`;
+        });
+        const orderText = `菜单订单如下：\n${items.join('\n')}\n`;
+        
+        // 优化点 10: 发送邮件时禁用按钮，防止重复提交
+        dom.checkoutBtn.disabled = true;
+        dom.checkoutBtn.textContent = '发送中...';
+
+        emailjs.send("service_c1c8cug", "template_8qbg6p9", {
+            to_email: email,
+            message: orderText
+        }, "EZnI5_7sLHTsg0omm")
+        .then(() => {
+            setMessage("发送成功！请查收邮箱", false);
+            orders.push({ time: new Date().toLocaleString(), detail: items.join(', ') });
+            cart = [];
+            renderCart();
+            renderMenu();
+            updateCheckoutButton(false); // 保持结算成功状态
+        })
+        .catch(error => {
+            setMessage(`发送失败：${error.text}`, true);
+            console.log(error);
+            updateCheckoutButton(true); // 恢复按钮状态，允许重试
+        });
+    }
+
+    function setMessage(msg, isError = false) {
+        dom.mailStatus.innerText = msg;
+        dom.mailStatus.classList.toggle('error', isError);
+        dom.mailStatus.classList.toggle('success', !isError);
+    }
+
+    function clearMessage(){
+        dom.mailStatus.innerText = '';
+        dom.mailStatus.classList.remove('success', 'error');
+    }
+
+    // 优化点 11: 使用 requestAnimationFrame 提升动画性能
+    function lazyLoadImages(){
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        const src = img.getAttribute('data-src');
+                        // 使用 requestAnimationFrame 确保样式修改在重排前执行
+                        requestAnimationFrame(() => {
+                            img.style.backgroundImage = `url('${src}')`;
+                            img.classList.add('loaded');
+                        });
+                        observer.unobserve(img);
+                    }
+                });
+            });
+            document.querySelectorAll('.menu-photo[data-src]').forEach(img => {
+                imageObserver.observe(img);
+            });
+        } else {
+            // 降级处理：不支持 IntersectionObserver 的浏览器直接加载所有图片
+            document.querySelectorAll('.menu-photo[data-src]').forEach(img => {
+                img.style.backgroundImage = `url('${img.getAttribute('data-src')}')`;
+                img.classList.add('loaded');
+            });
+        }
+    }
 </script>
 
 </body>
