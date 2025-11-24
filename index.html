@@ -4,11 +4,9 @@
     <meta charset="UTF-8" />
     <title>爱心菜单wzx♥kxp</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <!-- 优化点 1: 预连接到外部域名，提升CDN资源加载速度 -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     
     <style>
-        /* 优化点 2: 简化并压缩CSS，移除不必要的浏览器前缀 */
         body {
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #d8f3dc, #75e6da);
@@ -84,11 +82,10 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            background-color: #f0f0f0; /* 占位色 */
+            background-color: #f0f0f0;
             position: relative;
             overflow: hidden;
         }
-        /* 优化点 3: 骨架屏动画优化，减少CPU消耗 */
         .menu-photo::after {
             content: "";
             position: absolute;
@@ -150,7 +147,7 @@
             box-shadow: 0 0 10px #d32f2f;
         }
         .hidden {
-            display: none; /* 优化点 4: 使用更高效的 display: none 代替定位隐藏 */
+            display: none;
         }
     </style>
 </head>
@@ -178,14 +175,15 @@
     <div id="order-list"></div>
 </div>
 
-<!-- 优化点 5: 将JS脚本放在body末尾，并使用 defer 属性 -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js" defer></script>
 <script defer>
     let menu = [];
     let cart = [];
     let orders = [];
     
-    // 优化点 6: 缓存DOM元素，避免重复查询
+    // 关键修复：添加一个标志位来防止重复提交
+    let isSubmitting = false;
+    
     const dom = {
         menuList: document.getElementById('menu-list'),
         cartList: document.getElementById('cart-list'),
@@ -194,7 +192,6 @@
         mailStatus: document.getElementById('mail-status')
     };
 
-    // 优化点 7: 使用 DOMContentLoaded 确保DOM完全解析后再执行
     document.addEventListener('DOMContentLoaded', () => {
         fetch("list.txt")
             .then(resp => {
@@ -202,7 +199,6 @@
                 return resp.text();
             })
             .then(txt => {
-                // 优化点 8: 简化数据处理逻辑
                 menu = txt.split(/\r?\n/)
                           .filter(l => l.trim())
                           .map((line, idx) => {
@@ -273,7 +269,6 @@
     }
 
     function showView(name){
-        // 优化点 9: 简化视图切换逻辑
         document.querySelectorAll('#menu, #cart, #orders').forEach(el => {
             el.classList.toggle('hidden', el.id !== name);
         });
@@ -332,11 +327,21 @@
         dom.orderList.innerHTML = html;
     }
 
+    // 关键修复：使用标志位 `isSubmitting` 来控制提交逻辑
     function sendOrderEmail() {
+        // 如果正在提交中，则直接返回，忽略后续的点击
+        if (isSubmitting) {
+            return;
+        }
+
         if(!cart.length) {
             setMessage('购物车为空，无法结算。', true);
             return;
         }
+        
+        // 1. 立即将标志位置为 true，表示正在处理提交
+        isSubmitting = true;
+
         const email = "kxpgta5@126.com";
         const items = cart.map(item => {
             const m = menu.find(mi => mi.id === item.id);
@@ -344,7 +349,7 @@
         });
         const orderText = `菜单订单如下：\n${items.join('\n')}\n`;
         
-        // 优化点 10: 发送邮件时禁用按钮，防止重复提交
+        // 2. 禁用按钮并更改文本，提供用户反馈
         dom.checkoutBtn.disabled = true;
         dom.checkoutBtn.textContent = '发送中...';
 
@@ -364,6 +369,11 @@
             setMessage(`发送失败：${error.text}`, true);
             console.log(error);
             updateCheckoutButton(true); // 恢复按钮状态，允许重试
+        })
+        .finally(() => {
+            // 3. 在 Promise 结束时（无论成功或失败），将标志位重置为 false
+            // 这是至关重要的一步，确保后续可以再次提交
+            isSubmitting = false;
         });
     }
 
@@ -378,7 +388,6 @@
         dom.mailStatus.classList.remove('success', 'error');
     }
 
-    // 优化点 11: 使用 requestAnimationFrame 提升动画性能
     function lazyLoadImages(){
         if ('IntersectionObserver' in window) {
             const imageObserver = new IntersectionObserver((entries, observer) => {
@@ -386,7 +395,6 @@
                     if (entry.isIntersecting) {
                         const img = entry.target;
                         const src = img.getAttribute('data-src');
-                        // 使用 requestAnimationFrame 确保样式修改在重排前执行
                         requestAnimationFrame(() => {
                             img.style.backgroundImage = `url('${src}')`;
                             img.classList.add('loaded');
@@ -399,7 +407,6 @@
                 imageObserver.observe(img);
             });
         } else {
-            // 降级处理：不支持 IntersectionObserver 的浏览器直接加载所有图片
             document.querySelectorAll('.menu-photo[data-src]').forEach(img => {
                 img.style.backgroundImage = `url('${img.getAttribute('data-src')}')`;
                 img.classList.add('loaded');
