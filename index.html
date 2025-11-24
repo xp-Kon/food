@@ -78,14 +78,13 @@
     box-shadow: 0 15px 20px rgba(9, 96, 100, 0.3);
   }
   .menu-photo {
-    width: 100%;
-    max-width: 140px;
-    height: auto;
-    max-height: 110px;
+    width: 140px;
+    height: 110px;
     border-radius: 12px;
     object-fit: cover;
     margin-bottom: 10px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: block;
   }
   .qty-display {
     margin-top: 6px;
@@ -94,6 +93,21 @@
     font-size: 0.9em;
     user-select: none;
   }
+  /* --- 新增样式 --- */
+  .quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .quantity-controls button {
+    margin: 0;
+    padding: 5px 10px;
+    max-width: none;
+    font-size: 1.2em;
+    line-height: 1;
+  }
+  /* --- 新增样式结束 --- */
   #mail-status {
     margin-top: 10px;
     font-weight: 700;
@@ -170,21 +184,39 @@ function addCart(id){
   if (found) found.qty++;
   else cart.push({id:id, qty:1});
 
-  updateMenuQtyDisplay(id);
-  renderCart();
+  updateMenuQtyDisplay(id); // 更新菜单上的显示
+  renderCart(); // 同时也更新购物车页面
 
   setMessage(`已经成功加入“${menu.find(m => m.id === id).name}”到购物车。`);
-  updateCheckoutButton(true); // 恢复按钮可用和默认文字
+  updateCheckoutButton(true);
 }
 
+// --- 函数逻辑修改 ---
+function decreaseCart(id){
+  let found = cart.find(i=>i.id === id);
+  if (found) {
+    found.qty--;
+    if (found.qty <= 0) {
+      removeCart(id); // 如果数量为0，则直接移除
+    } else {
+      updateMenuQtyDisplay(id); // 否则只更新数量显示
+      renderCart();
+      setMessage(`“${menu.find(m => m.id === id).name}”的数量已减少。`);
+    }
+  }
+}
+
+// --- 函数逻辑修改 ---
 function updateMenuQtyDisplay(id){
   const item = cart.find(i => i.id === id);
-  const qtySpan = document.querySelector(`#menu-item-${id} .qty-display`);
-  if(item && qtySpan){
-    qtySpan.textContent = `数量：${item.qty}`;
-    qtySpan.style.display = 'block';
-  } else if(qtySpan){
-    qtySpan.style.display = 'none';
+  const qtyContainer = document.querySelector(`#menu-item-${id} .quantity-controls`); // 找到控制区域
+  const qtySpan = document.querySelector(`#menu-item-${id} .qty-display`); // 找到数量显示span
+
+  if(item && qtyContainer && qtySpan){
+    qtySpan.textContent = item.qty; // 只显示数字
+    qtyContainer.style.display = 'flex'; // 显示整个控制区域
+  } else if(qtyContainer) {
+    qtyContainer.style.display = 'none'; // 隐藏整个控制区域
   }
 }
 
@@ -192,13 +224,13 @@ function updateCheckoutButton(enabled){
   if(enabled){
     checkoutBtn.disabled = false;
     checkoutBtn.textContent = '去结算';
-    checkoutBtn.style.background = '#3caea3'; // 原色
+    checkoutBtn.style.background = '#3caea3';
     checkoutBtn.style.cursor = 'pointer';
     checkoutBtn.style.boxShadow = '0 4px 8px rgb(60 174 163 / 0.5)';
   } else {
     checkoutBtn.disabled = true;
     checkoutBtn.textContent = '结算成功';
-    checkoutBtn.style.background = '#007bff'; // 蓝色
+    checkoutBtn.style.background = '#007bff';
     checkoutBtn.style.cursor = 'default';
     checkoutBtn.style.boxShadow = 'none';
   }
@@ -213,17 +245,27 @@ function showView(name){
   if(name === 'orders') renderOrders();
 }
 
+// --- 模板修改 ---
 function renderMenu(){
   let html = "";
   menu.forEach(item=>{
     html += `<div class="menu-item" id="menu-item-${item.id}">
-      <img class="menu-photo" src="${item.img}" alt="${item.name}">
+      <img loading="lazy" class="menu-photo" src="${item.img}" alt="${item.name}">
       <span>${item.name}</span>
-      <div class="qty-display" style="display:none;"></div>
+      <!-- 新增的数量控制区域，默认隐藏 -->
+      <div class="quantity-controls" style="display: none;">
+        <button onclick="decreaseCart(${item.id})">-</button>
+        <span class="qty-display">${cart.find(i => i.id === item.id)?.qty || 0}</span>
+        <button onclick="removeCart(${item.id})">删除</button>
+      </div>
+      <!-- 原有按钮 -->
       <button onclick="addCart(${item.id})">加入购物车</button>
     </div>`;
   });
   document.getElementById('menu-list').innerHTML = html;
+  
+  // 渲染后，根据购物车状态更新显示
+  menu.forEach(mi => updateMenuQtyDisplay(mi.id));
 }
 
 function renderCart(){
@@ -231,7 +273,7 @@ function renderCart(){
   cart.forEach(item=>{
     let mi = menu.find(i=>i.id === item.id);
     html += `<div class="cart-item">
-      <img class="menu-photo" src="${mi.img}" alt="${mi.name}">
+      <img loading="lazy" class="menu-photo" src="${mi.img}" alt="${mi.name}">
       <span>${mi.name} x${item.qty}</span>
       <button onclick="removeCart(${item.id})">删除</button>
     </div>`;
@@ -242,6 +284,8 @@ function renderCart(){
   const mailStatus = document.getElementById('mail-status');
   mailStatus.innerText = "";
   mailStatus.classList.remove('success', 'error');
+
+  // 当从购物车页面删除项目时，同步更新菜单页面的显示
   menu.forEach(mi => updateMenuQtyDisplay(mi.id));
 
   cartList.style.display = 'none';
@@ -249,9 +293,15 @@ function renderCart(){
   cartList.style.display = '';
 }
 
+// --- 逻辑微调 ---
 function removeCart(id){
+  const itemToRemove = menu.find(m => m.id === id);
   cart = cart.filter(i=>i.id !== id);
   renderCart();
+  updateMenuQtyDisplay(id); // 确保菜单上的控制区域被隐藏
+  if (itemToRemove) {
+      setMessage(`已从购物车中移除“${itemToRemove.name}”。`);
+  }
 }
 
 function renderOrders(){
@@ -285,11 +335,11 @@ function sendOrderEmail() {
     mailStatus.classList.add('success');
 
     orders.push({ time: new Date().toLocaleString(), detail: items.join(', ') });
-    cart = [];
-    renderCart();
-    renderOrders();
+    cart = []; // 清空购物车
+    renderCart(); // 更新购物车页面
+    renderMenu(); // 重新渲染菜单页面，以清除所有数量控制
 
-    updateCheckoutButton(false); // 发送成功禁用按钮并变蓝色显示
+    updateCheckoutButton(false);
 
     setTimeout(() => {
       mailStatus.innerText = "";
