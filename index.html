@@ -33,9 +33,7 @@
     cursor: pointer;
     font-weight: 600;
     color: white;
-    /* 添加浏览器前缀 */
     box-shadow: 0 4px 8px rgb(60 174 163 / 0.5);
-    -webkit-transition: background 0.3s, -webkit-transform 0.2s;
     transition: background 0.3s, transform 0.2s;
     flex-basis: auto;
     margin: 10px auto 0 auto;
@@ -43,19 +41,15 @@
     max-width: 120px;
   }
   button:disabled {
-    background: #007bff; /* 蓝色，禁用样式 */
+    background: #007bff;
     cursor: default;
     box-shadow: none;
   }
   button:hover:not(:disabled) {
     background: #278d85;
-    /* 添加浏览器前缀 */
-    -webkit-transform: scale(1.05);
     transform: scale(1.05);
   }
   button:active:not(:disabled) {
-    /* 添加浏览器前缀 */
-    -webkit-transform: scale(0.95);
     transform: scale(0.95);
   }
   #menu-list {
@@ -78,8 +72,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* 添加浏览器前缀 */
-    -webkit-transition: box-shadow 0.3s;
     transition: box-shadow 0.3s;
   }
   .menu-item:hover, .cart-item:hover {
@@ -89,10 +81,32 @@
     width: 140px;
     height: 110px;
     border-radius: 12px;
-    object-fit: cover;
     margin-bottom: 10px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     display: block;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #f0f0f0;
+    position: relative;
+    overflow: hidden;
+  }
+  .menu-photo::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    transform: translateX(-100%);
+    animation: shimmer 1.5s infinite;
+  }
+  @keyframes shimmer {
+    100% { transform: translateX(100%); }
+  }
+  .menu-photo.loaded::after {
+    display: none;
   }
   .qty-display {
     margin-top: 6px;
@@ -122,8 +136,6 @@
     text-align: center;
     border-radius: 8px;
     padding: 6px 12px;
-    /* 添加浏览器前缀 */
-    -webkit-transition: all 0.4s;
     transition: all 0.4s;
   }
   #mail-status.success {
@@ -171,22 +183,17 @@
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
 let menu = [];
-// 优化 fetch 错误处理
 fetch("list.txt")
   .then(resp => {
-    if (!resp.ok) {
-      throw new Error(`HTTP error! status: ${resp.status}`);
-    }
+    if (!resp.ok) throw new Error(`HTTP error! status: ${resp.status}`);
     return resp.text();
   })
   .then(txt => {
     let lines = txt.split(/\r?\n/);
     menu = lines.filter(l=>l.trim()).map((line,idx)=>{
       let m = line.match(/^(.+?),['"](.+)['"]$/);
-      if(m){
-        return {id:idx, img:m[1].trim(), name:m[2].trim()};
-      }
-    }).filter(Boolean); // filter out any undefined results from map
+      if(m) return {id:idx, img:m[1].trim(), name:m[2].trim()};
+    }).filter(Boolean);
     renderMenu();
   })
   .catch(error => {
@@ -196,17 +203,14 @@ fetch("list.txt")
 
 let cart = [];
 let orders = [];
-
 const checkoutBtn = document.getElementById('checkout-btn');
 
 function addCart(id){
   let found = cart.find(i=>i.id === id);
   if (found) found.qty++;
   else cart.push({id:id, qty:1});
-
   updateMenuQtyDisplay(id);
   renderCart();
-
   setMessage(`已经成功加入“${menu.find(m => m.id === id).name}”到购物车。`);
   updateCheckoutButton(true);
 }
@@ -229,7 +233,6 @@ function updateMenuQtyDisplay(id){
   const item = cart.find(i => i.id === id);
   const qtyContainer = document.querySelector(`#menu-item-${id} .quantity-controls`);
   const qtySpan = document.querySelector(`#menu-item-${id} .qty-display`);
-
   if(item && qtyContainer && qtySpan){
     qtySpan.textContent = item.qty;
     qtyContainer.style.display = 'flex';
@@ -256,24 +259,19 @@ function updateCheckoutButton(enabled){
 
 function showView(name){
   for(const view of ['menu','cart','orders']){
-    const el = document.getElementById(view);
-    el.classList.toggle('hidden', view !== name);
+    document.getElementById(view).classList.toggle('hidden', view !== name);
   }
   if(name === 'cart') renderCart();
   if(name === 'orders') renderOrders();
 }
 
-// 修复：替换可选链操作符
 function renderMenu(){
   let html = "";
   menu.forEach(item=>{
-    // 先查找购物车项，避免重复查找
     const cartItem = cart.find(i => i.id === item.id);
-    // 使用三元运算符代替 ?.
     const qty = cartItem ? cartItem.qty : 0;
-    
     html += `<div class="menu-item" id="menu-item-${item.id}">
-      <img loading="lazy" class="menu-photo" src="${item.img}" alt="${item.name}">
+      <div class="menu-photo" data-src="${item.img}"></div>
       <span>${item.name}</span>
       <div class="quantity-controls" style="display: none;">
         <button onclick="decreaseCart(${item.id})">-</button>
@@ -284,8 +282,8 @@ function renderMenu(){
     </div>`;
   });
   document.getElementById('menu-list').innerHTML = html;
-  
   menu.forEach(mi => updateMenuQtyDisplay(mi.id));
+  lazyLoadImages();
 }
 
 function renderCart(){
@@ -293,7 +291,7 @@ function renderCart(){
   cart.forEach(item=>{
     let mi = menu.find(i=>i.id === item.id);
     html += `<div class="cart-item">
-      <img loading="lazy" class="menu-photo" src="${mi.img}" alt="${mi.name}">
+      <div class="menu-photo" style="background-image: url('${mi.img}')"></div>
       <span>${mi.name} x${item.qty}</span>
       <button onclick="removeCart(${item.id})">删除</button>
     </div>`;
@@ -304,12 +302,9 @@ function renderCart(){
   const mailStatus = document.getElementById('mail-status');
   mailStatus.innerText = "";
   mailStatus.classList.remove('success', 'error');
-
   menu.forEach(mi => updateMenuQtyDisplay(mi.id));
-
-  // 这两行是为了触发重排，可能在某些浏览器下有动画效果，保留
   cartList.style.display = 'none';
-  cartList.offsetHeight; // 触发重排
+  cartList.offsetHeight;
   cartList.style.display = '';
 }
 
@@ -318,9 +313,7 @@ function removeCart(id){
   cart = cart.filter(i=>i.id !== id);
   renderCart();
   updateMenuQtyDisplay(id);
-  if (itemToRemove) {
-      setMessage(`已从购物车中移除“${itemToRemove.name}”。`);
-  }
+  if (itemToRemove) setMessage(`已从购物车中移除“${itemToRemove.name}”。`);
 }
 
 function renderOrders(){
@@ -347,27 +340,23 @@ function sendOrderEmail() {
     to_email: email,
     message: orderText
   }, "EZnI5_7sLHTsg0omm")
-  .then(function() {
+  .then(() => {
     let mailStatus = document.getElementById('mail-status');
     mailStatus.innerText = "发送成功！请查收邮箱";
-    mailStatus.classList.remove('error');
     mailStatus.classList.add('success');
-
     orders.push({ time: new Date().toLocaleString(), detail: items.join(', ') });
     cart = [];
     renderCart();
     renderMenu();
-
     updateCheckoutButton(false);
-
     setTimeout(() => {
       mailStatus.innerText = "";
       mailStatus.classList.remove('success');
     }, 5000);
-  }, function(error) {
+  })
+  .catch(error => {
     let mailStatus = document.getElementById('mail-status');
     mailStatus.innerText = "发送失败：" + error.text;
-    mailStatus.classList.remove('success');
     mailStatus.classList.add('error');
     console.log(error);
   });
@@ -376,19 +365,31 @@ function sendOrderEmail() {
 function setMessage(msg, isError = false) {
   const status = document.getElementById('mail-status');
   status.innerText = msg;
-  if(isError){
-    status.classList.remove('success');
-    status.classList.add('error');
-  } else{
-    status.classList.remove('error');
-    status.classList.add('success');
-  }
+  status.classList.toggle('error', isError);
+  status.classList.toggle('success', !isError);
 }
 
 function clearMessage(){
   const status = document.getElementById('mail-status');
   status.innerText = '';
   status.classList.remove('success', 'error');
+}
+
+function lazyLoadImages(){
+  const images = document.querySelectorAll('.menu-photo[data-src]');
+  const imageObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        const src = img.getAttribute('data-src');
+        img.style.backgroundImage = `url('${src}')`;
+        img.classList.add('loaded');
+        img.removeAttribute('data-src');
+        observer.unobserve(img);
+      }
+    });
+  });
+  images.forEach(img => imageObserver.observe(img));
 }
 </script>
 
