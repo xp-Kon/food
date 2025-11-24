@@ -33,7 +33,9 @@
     cursor: pointer;
     font-weight: 600;
     color: white;
+    /* 添加浏览器前缀 */
     box-shadow: 0 4px 8px rgb(60 174 163 / 0.5);
+    -webkit-transition: background 0.3s, -webkit-transform 0.2s;
     transition: background 0.3s, transform 0.2s;
     flex-basis: auto;
     margin: 10px auto 0 auto;
@@ -47,9 +49,13 @@
   }
   button:hover:not(:disabled) {
     background: #278d85;
+    /* 添加浏览器前缀 */
+    -webkit-transform: scale(1.05);
     transform: scale(1.05);
   }
   button:active:not(:disabled) {
+    /* 添加浏览器前缀 */
+    -webkit-transform: scale(0.95);
     transform: scale(0.95);
   }
   #menu-list {
@@ -72,6 +78,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    /* 添加浏览器前缀 */
+    -webkit-transition: box-shadow 0.3s;
     transition: box-shadow 0.3s;
   }
   .menu-item:hover, .cart-item:hover {
@@ -93,7 +101,6 @@
     font-size: 0.9em;
     user-select: none;
   }
-  /* --- 新增样式 --- */
   .quantity-controls {
     display: flex;
     align-items: center;
@@ -107,7 +114,6 @@
     font-size: 1.2em;
     line-height: 1;
   }
-  /* --- 新增样式结束 --- */
   #mail-status {
     margin-top: 10px;
     font-weight: 700;
@@ -116,6 +122,8 @@
     text-align: center;
     border-radius: 8px;
     padding: 6px 12px;
+    /* 添加浏览器前缀 */
+    -webkit-transition: all 0.4s;
     transition: all 0.4s;
   }
   #mail-status.success {
@@ -163,16 +171,28 @@
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
 let menu = [];
-fetch("list.txt").then(resp=>resp.text()).then(txt=>{
-  let lines = txt.split(/\r?\n/);
-  menu = lines.filter(l=>l.trim()).map((line,idx)=>{
-    let m = line.match(/^(.+?),['"](.+)['"]$/);
-    if(m){
-      return {id:idx, img:m[1].trim(), name:m[2].trim()};
+// 优化 fetch 错误处理
+fetch("list.txt")
+  .then(resp => {
+    if (!resp.ok) {
+      throw new Error(`HTTP error! status: ${resp.status}`);
     }
-  }).filter(Boolean);
-  renderMenu();
-});
+    return resp.text();
+  })
+  .then(txt => {
+    let lines = txt.split(/\r?\n/);
+    menu = lines.filter(l=>l.trim()).map((line,idx)=>{
+      let m = line.match(/^(.+?),['"](.+)['"]$/);
+      if(m){
+        return {id:idx, img:m[1].trim(), name:m[2].trim()};
+      }
+    }).filter(Boolean); // filter out any undefined results from map
+    renderMenu();
+  })
+  .catch(error => {
+    console.error("Error loading menu:", error);
+    document.getElementById('menu-list').innerHTML = "<p>菜单加载失败，请稍后再试。</p>";
+  });
 
 let cart = [];
 let orders = [];
@@ -184,39 +204,37 @@ function addCart(id){
   if (found) found.qty++;
   else cart.push({id:id, qty:1});
 
-  updateMenuQtyDisplay(id); // 更新菜单上的显示
-  renderCart(); // 同时也更新购物车页面
+  updateMenuQtyDisplay(id);
+  renderCart();
 
   setMessage(`已经成功加入“${menu.find(m => m.id === id).name}”到购物车。`);
   updateCheckoutButton(true);
 }
 
-// --- 函数逻辑修改 ---
 function decreaseCart(id){
   let found = cart.find(i=>i.id === id);
   if (found) {
     found.qty--;
     if (found.qty <= 0) {
-      removeCart(id); // 如果数量为0，则直接移除
+      removeCart(id);
     } else {
-      updateMenuQtyDisplay(id); // 否则只更新数量显示
+      updateMenuQtyDisplay(id);
       renderCart();
       setMessage(`“${menu.find(m => m.id === id).name}”的数量已减少。`);
     }
   }
 }
 
-// --- 函数逻辑修改 ---
 function updateMenuQtyDisplay(id){
   const item = cart.find(i => i.id === id);
-  const qtyContainer = document.querySelector(`#menu-item-${id} .quantity-controls`); // 找到控制区域
-  const qtySpan = document.querySelector(`#menu-item-${id} .qty-display`); // 找到数量显示span
+  const qtyContainer = document.querySelector(`#menu-item-${id} .quantity-controls`);
+  const qtySpan = document.querySelector(`#menu-item-${id} .qty-display`);
 
   if(item && qtyContainer && qtySpan){
-    qtySpan.textContent = item.qty; // 只显示数字
-    qtyContainer.style.display = 'flex'; // 显示整个控制区域
+    qtySpan.textContent = item.qty;
+    qtyContainer.style.display = 'flex';
   } else if(qtyContainer) {
-    qtyContainer.style.display = 'none'; // 隐藏整个控制区域
+    qtyContainer.style.display = 'none';
   }
 }
 
@@ -245,26 +263,28 @@ function showView(name){
   if(name === 'orders') renderOrders();
 }
 
-// --- 模板修改 ---
+// 修复：替换可选链操作符
 function renderMenu(){
   let html = "";
   menu.forEach(item=>{
+    // 先查找购物车项，避免重复查找
+    const cartItem = cart.find(i => i.id === item.id);
+    // 使用三元运算符代替 ?.
+    const qty = cartItem ? cartItem.qty : 0;
+    
     html += `<div class="menu-item" id="menu-item-${item.id}">
       <img loading="lazy" class="menu-photo" src="${item.img}" alt="${item.name}">
       <span>${item.name}</span>
-      <!-- 新增的数量控制区域，默认隐藏 -->
       <div class="quantity-controls" style="display: none;">
         <button onclick="decreaseCart(${item.id})">-</button>
-        <span class="qty-display">${cart.find(i => i.id === item.id)?.qty || 0}</span>
+        <span class="qty-display">${qty}</span>
         <button onclick="removeCart(${item.id})">删除</button>
       </div>
-      <!-- 原有按钮 -->
       <button onclick="addCart(${item.id})">加入购物车</button>
     </div>`;
   });
   document.getElementById('menu-list').innerHTML = html;
   
-  // 渲染后，根据购物车状态更新显示
   menu.forEach(mi => updateMenuQtyDisplay(mi.id));
 }
 
@@ -285,20 +305,19 @@ function renderCart(){
   mailStatus.innerText = "";
   mailStatus.classList.remove('success', 'error');
 
-  // 当从购物车页面删除项目时，同步更新菜单页面的显示
   menu.forEach(mi => updateMenuQtyDisplay(mi.id));
 
+  // 这两行是为了触发重排，可能在某些浏览器下有动画效果，保留
   cartList.style.display = 'none';
-  cartList.offsetHeight;
+  cartList.offsetHeight; // 触发重排
   cartList.style.display = '';
 }
 
-// --- 逻辑微调 ---
 function removeCart(id){
   const itemToRemove = menu.find(m => m.id === id);
   cart = cart.filter(i=>i.id !== id);
   renderCart();
-  updateMenuQtyDisplay(id); // 确保菜单上的控制区域被隐藏
+  updateMenuQtyDisplay(id);
   if (itemToRemove) {
       setMessage(`已从购物车中移除“${itemToRemove.name}”。`);
   }
@@ -335,9 +354,9 @@ function sendOrderEmail() {
     mailStatus.classList.add('success');
 
     orders.push({ time: new Date().toLocaleString(), detail: items.join(', ') });
-    cart = []; // 清空购物车
-    renderCart(); // 更新购物车页面
-    renderMenu(); // 重新渲染菜单页面，以清除所有数量控制
+    cart = [];
+    renderCart();
+    renderMenu();
 
     updateCheckoutButton(false);
 
